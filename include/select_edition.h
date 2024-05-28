@@ -1,0 +1,8 @@
+//
+// Created by Colin on 28.05.2024.
+//
+
+#ifndef ARCHWIN_SELECT_EDITION_H
+#define ARCHWIN_SELECT_EDITION_H
+
+#endif //ARCHWIN_SELECT_EDITION_H
