@@ -4,8 +4,22 @@
 #include "../include/select_disk.h"
 #include "../include/select_edition.h"
 #include "../include/install_windows.h"
+#include "../include/create_user.h"
 
 #define MAX_OUTPUT_SIZE 1024
+
+int installation_confirmed(char CDROM, DiskInfo disk, Edition edition) {
+    char output[MAX_OUTPUT_SIZE];
+    int result = install_windows(CDROM, disk, edition);
+    if (!result) {
+        printf("Windows installed successfully!!!\n");
+        printf("You can now reboot your computer.\n");
+        return 0;
+    } else {
+        printf("Error: %s\n", output);
+        return 1;
+    }
+}
 
 int main ( int argc, char *argv[] )
 {
@@ -35,16 +49,11 @@ int main ( int argc, char *argv[] )
         char answer;
         scanf("%c", &answer);
         if (answer == 'y') {
-            char output[MAX_OUTPUT_SIZE];
-            int result = install_windows(CDROM, disk, edition);
-            if (!result) {
-                printf("Windows installed successfully!!!\n");
-                printf("You can now reboot your computer.\n");
-                break;
-            } else {
-                printf("Error: %s\n", output);
-                break;
-            }
+            installation_confirmed(CDROM, disk, edition);
+            create_user();
+            break;
+        } else if (answer == 'n') {
+            continue;
         } else if (answer == 'e') {
             printf("Exiting...\n");
             break;

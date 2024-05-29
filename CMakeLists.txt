@@ -20,4 +20,6 @@ add_executable(archwin src/main.c
         lib/count_substr.h
         include/install_windows.c
         include/install_windows.h
+        include/create_user.c
+        include/create_user.h
 )

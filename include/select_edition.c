@@ -38,7 +38,7 @@ Edition *parse_edition(char *output, int *edition_count) {
         line = strtok(NULL, "\n");
     }
 
-    *edition_count = count; // Return the actual number of editions parsed
+    *edition_count = count;
     return edition;
 }
 
