@@ -9,8 +9,10 @@ typedef struct {
     int disk;
     int size;
     int free;
+    char *sizeUnit;
+    char *freeUnit;
 } DiskInfo;
 
-DiskInfo *select_disk();
+DiskInfo select_disk();
 
 #endif //ARCHWIN_SELECT_DISK_H

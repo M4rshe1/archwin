@@ -30,7 +30,12 @@ int menu(const char *menu_title, const char *menu_banner, const char **menu_opti
             selected = (selected - 1 + option_count) % option_count;
         } else if (key == 13) { // Enter key
             break;
+        } else if (key == 27) { // Escape key
+            selected = -1;
+            break;
         }
     }
+
+    system("cls");
     return selected;
 }

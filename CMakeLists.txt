@@ -10,8 +10,14 @@ add_executable(archwin src/main.c
         include/banner.h
         include/select_disk.c
         include/select_disk.h
-        include/exec_command.c
-        include/exec_command.h
+        include/exec.c
+        include/exec.h
         include/select_edition.c
         include/select_edition.h
+        include/cdrom.c
+        include/cdrom.h
+        lib/count_substr.c
+        lib/count_substr.h
+        include/install_windows.c
+        include/install_windows.h
 )

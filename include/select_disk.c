@@ -1,83 +1,80 @@
-//
-// Created by Colin on 28.05.2024.
-//
-
 #include "select_disk.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "menu.h"
 #include <windows.h>
 #include "banner.h"
-#include "exec_command.h"
+#include "exec.h"
 
 #define MAX_DISKS 10
 
-DiskInfo *parseDiskpartOutput(char *output, int *numDisks) {
-    char *line;
-    const char *delimiter = "\r\n";
-    DiskInfo *disks = malloc(MAX_DISKS * sizeof(DiskInfo));
-    if (!disks) {
-        printf("Memory allocation failed\n");
-        exit(1);
-    }
-    *numDisks = 0;
+void parseDiskpartOutput(const char *input, DiskInfo disks[], int *diskCount) {
+    const char *delimiter = "\n";
+    char *inputCopy = strdup(input); // Make a copy of the input string to tokenize
+    char *saveptr;
+    char *line = strtok_r(inputCopy, delimiter, &saveptr);
+    int count = 0;
 
-
-    line = strtok(output, delimiter);
     while (line != NULL) {
-        printf("%s\n", line);
-        int disk, size, free;
-        if (sscanf(line, "%d Online %d GB %d", &disk, &size, &free) == 3) {
-            if (*numDisks < MAX_DISKS) {
-                disks[*numDisks].disk = disk;
-                disks[*numDisks].size = size;
-                disks[*numDisks].free = free;
-                (*numDisks)++;
-            } else {
-                printf("Maximum number of disks reached\n");
-                break;
+        if (strstr(line, "Online") != NULL) {
+            char lineCopy[strlen(line) + 1];
+            strcpy(lineCopy, line);
+            char *token = strtok(lineCopy, " ");
+            int tokenIndex = 0;
+
+            while (token != NULL) {
+                if (tokenIndex == 1) {
+                    disks[count].disk = atoi(token);
+                } else if (tokenIndex == 3) {
+                    disks[count].size = atoi(token);
+                } else if (tokenIndex == 4) {
+                    disks[count].sizeUnit = strdup(token); // Allocate memory for size unit
+                } else if (tokenIndex == 5) {
+                    disks[count].free = atoi(token);
+                } else if (tokenIndex == 6) {
+                    disks[count].freeUnit = strdup(token); // Allocate memory for free unit
+                }
+                token = strtok(NULL, " ");
+                tokenIndex++;
             }
+            count++;
         }
-        line = strtok(NULL, delimiter);
+        line = strtok_r(NULL, delimiter, &saveptr);
     }
-    return disks;
+
+    free(inputCopy);
+    *diskCount = count;
 }
 
-DiskInfo *select_disk() {
+DiskInfo select_disk() {
     const char *banner = create_banner();
-    const char *title = "Select Disk";
-    const char *options[] = {};
+    const char *title = "Select the disk to install Windows on";
+    char *options[MAX_DISKS + 1];
 
-    char diskpart_disks[] = "\
-list disk\n\
-exit\
-";
+    char *diskpart_command = "list disk\nexit\n";
+    char *diskpart_output = execdp(diskpart_command, 0);
 
-    // put the diskpart command into a file in %tmp%/diskpart_disk.txt
-    FILE *diskpart_file = fopen("diskpart_disk.txt", "w");
-    fputs(diskpart_disks, diskpart_file);
-    char *diskpart_command = "diskpart /s diskpart_disk.txt";
-    char *diskpart_output = exec_command(diskpart_command,"diskpart_output.txt");
-
-    printf("%s\n", diskpart_output);
-    // remove the diskpart command file
-    remove("diskpart_disk.txt");
-
-    int *numDisks = malloc(sizeof(int));
-    DiskInfo *disks = parseDiskpartOutput(diskpart_output, numDisks);
+    int numDisks = 0;
+    DiskInfo disks[MAX_DISKS];
+    parseDiskpartOutput(diskpart_output, disks, &numDisks);
     free(diskpart_output);
- // list of all the disks in format disk $ -  $ GB ($ free)
-    for (int i = 0; i < *numDisks; i++) {
-        char *option = malloc(100);
-        if (!option) {
+
+    for (int i = 0; i < numDisks; i++) {
+        options[i] = malloc(100);
+        if (!options[i]) {
             printf("Memory allocation failed\n");
             exit(1);
         }
-        sprintf(option, "Disk %d - %d GB (%d free)", disks[i].disk, disks[i].size, disks[i].free);
-        options[i] = option;
+
+        sprintf(options[i], "Disk %d - %d %s (%d %s free)",
+                disks[i].disk, disks[i].size, disks[i].sizeUnit,
+                disks[i].free, disks[i].freeUnit);
+        printf("%s\n", options[i]);
     }
-    options[*numDisks] = NULL;
+    options[numDisks] = NULL;
 
-    return &disks[0];
+    int selectedDisk = menu(title, banner, (const char **) options);
+
+    return disks[selectedDisk];
 }
-
