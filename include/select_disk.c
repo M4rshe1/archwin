@@ -25,15 +25,15 @@ void parseDiskpartOutput(const char *input, DiskInfo disks[], int *diskCount) {
 
             while (token != NULL) {
                 if (tokenIndex == 1) {
-                    disks[count].disk = atoi(token);
+                    disks[count].disk = strtol(token, NULL, 10);
                 } else if (tokenIndex == 3) {
-                    disks[count].size = atoi(token);
+                    disks[count].size = strtol(token, NULL, 10);
                 } else if (tokenIndex == 4) {
-                    disks[count].sizeUnit = strdup(token); // Allocate memory for size unit
+                    disks[count].sizeUnit = strdup(token);
                 } else if (tokenIndex == 5) {
-                    disks[count].free = atoi(token);
+                    disks[count].free = strtol(token, NULL, 10);
                 } else if (tokenIndex == 6) {
-                    disks[count].freeUnit = strdup(token); // Allocate memory for free unit
+                    disks[count].freeUnit = strdup(token);
                 }
                 token = strtok(NULL, " ");
                 tokenIndex++;

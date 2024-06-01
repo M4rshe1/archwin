@@ -16,7 +16,7 @@ int install_windows(char CDROM, DiskInfo disk, Edition edition) {
     printf("Formatting disk %d...\n", disk.disk);
     sprintf(command,
             "select disk %d\nclean\nconvert gpt\ncreate partition efi size=100\nformat quick fs=fat32 label=\"EFI\"\nassign letter=B:\ncreate partition primary\nformat quick fs=ntfs label=\"Windows\"\nassign letter=A:\nexit\n",
-            disk.disk, CDROM, disk.disk);
+            disk.disk);
     char *result = execdp(command, 0);
     if (result == NULL) {
         return 1;

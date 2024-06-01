@@ -22,7 +22,12 @@ char *exec(const char *command, int print_output) {
         if (output == NULL) {
             output = strdup(buffer);
         } else {
-            output = realloc(output, strlen(output) + strlen(buffer) + 1);
+            char *tmp = realloc(output, strlen(output) + strlen(buffer) + 1);
+            if (tmp == NULL) {
+                free(output);
+                return NULL;
+            }
+            output = tmp;
             strcat(output, buffer);
         }
     }

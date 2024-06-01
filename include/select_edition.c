@@ -22,7 +22,7 @@ Edition *parse_edition(char *output, int *edition_count) {
 
     while (line != NULL) {
         if (strstr(line, "Index") != NULL) {
-            edition[count].index = atoi(strstr(line, ":") + 1);
+            edition[count].index = strtol(strstr(line, ":") + 1, NULL, 10);
         } else if (strstr(line, "Name") != NULL) {
             char *name_start = strstr(line, ":") + 1;
             while (*name_start == ' ') name_start++; // Trim leading spaces

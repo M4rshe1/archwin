@@ -4,7 +4,6 @@
 #include "../include/select_disk.h"
 #include "../include/select_edition.h"
 #include "../include/install_windows.h"
-#include "../include/create_user.h"
 
 #define MAX_OUTPUT_SIZE 1024
 
@@ -50,7 +49,6 @@ int main ( int argc, char *argv[] )
         scanf("%c", &answer);
         if (answer == 'y') {
             installation_confirmed(CDROM, disk, edition);
-            create_user();
             break;
         } else if (answer == 'n') {
             continue;

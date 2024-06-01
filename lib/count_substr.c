@@ -12,12 +12,11 @@ void count_substr(const char *str, const char *word, int *count) {
     int word_len = strlen(word);
 
     while ((temp = strstr(temp, word)) != NULL) {
-        // Ensure the found word is a standalone word
         if ((temp == str || !isalnum(*(temp - 1))) &&
             !isalnum(*(temp + word_len))) {
             counter++;
         }
-        temp += word_len; // Move to the next part of the string
+        temp += word_len;
     }
 
     *count = counter;
